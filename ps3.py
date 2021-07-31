@@ -13,6 +13,7 @@ import string
 
 VOWELS = 'aeiou'
 CONSONANTS = 'bcdfghjklmnpqrstvwxyz'
+ABC = VOWELS + CONSONANTS
 HAND_SIZE = 7
 
 SCRABBLE_LETTER_VALUES = {
@@ -56,16 +57,15 @@ def get_frequency_dict(sequence):
     # freqs: dictionary (element_type -> int)
     freq = {}
     for x in sequence:
-        freq[x] = freq.get(x,0) + 1
-    return freq
-	
+        freq[x] = freq.get(x,0) + 1 
+    return freq 
+  
 
 # (end of helper code)
 # -----------------------------------
-
-#
-# Problem #1: Scoring a word
-#
+# 
+# Problem #1: Scoring a word 
+# 
 def get_word_score(word, n):
     """
     Returns the score for a word. Assumes the word is a
@@ -76,22 +76,27 @@ def get_word_score(word, n):
     lowercase letters, so you will have to handle uppercase and mixed case strings 
     appropriately. 
 
-	The score for a word is the product of two components:
+  The score for a word is the product of two components:
 
-	The first component is the sum of the points for letters in the word.
-	The second component is the larger of:
+  The first component is the sum of the points for letters in the word.
+  The second component is the larger of:
             1, or
             7*wordlen - 3*(n-wordlen), where wordlen is the length of the word
             and n is the hand length when the word was played
 
-	Letters are scored as in Scrabble; A is worth 1, B is
-	worth 3, C is worth 3, D is worth 2, E is worth 1, and so on.
+  Letters are scored as in Scrabble; A is worth 1, B is
+  worth 3, C is worth 3, D is worth 2, E is worth 1, and so on.
 
     word: string
     n: int >= 0
     returns: int >= 0
     """
-    
+    Cur_Score = 0
+    for letter in word:
+       Cur_Score += SCRABBLE_LETTER_VALUES[letter]
+    if 7*len(word)-3*(n-len(word))>1:
+      return Cur_Score * 7*len(word)-3*(n-len(word))
+    return Cur_Score
     pass  # TO DO... Remove this line when you implement this function
 
 #
@@ -102,9 +107,9 @@ def display_hand(hand):
     Displays the letters currently in the hand.
 
     For example:
-       display_hand({'a':1, 'x':2, 'l':3, 'e':1})
+      display_hand({'a':1, 'x':2, 'l':3, 'e':1})
     Should print out something like:
-       a x x l l l e
+      a x x l l l e
     The order of the letters is unimportant.
 
     hand: dictionary (string -> int)
@@ -112,7 +117,7 @@ def display_hand(hand):
     
     for letter in hand.keys():
         for j in range(hand[letter]):
-             print(letter, end=' ')      # print all on the same line
+            print(letter, end=' ')      # print all on the same line
     print()                              # print an empty line
 
 #
@@ -146,9 +151,9 @@ def deal_hand(n):
     
     return hand
 
-#
+# 
 # Problem #2: Update a hand by removing letters
-#
+# 
 def update_hand(hand, word):
     """
     Does NOT assume that hand contains every letter in word at least as
@@ -178,7 +183,7 @@ def is_valid_word(word, hand, word_list):
     Returns True if word is in the word_list and is entirely
     composed of letters in the hand. Otherwise, returns False.
     Does not mutate hand or word_list.
-   
+  
     word: string
     hand: dictionary (string -> int)
     word_list: list of lowercase strings
@@ -230,7 +235,34 @@ def play_hand(hand, word_list):
       returns: the total score for the hand
       
     """
-    
+    Input = "" 
+    Cur_Score = 0
+    while Input != "!!":
+      cnt =0
+      Input = input("Type a word only using the available letters \n if u can't think of a word to write \"!!\"  to end that hand. \n")
+      Temp = Input
+      n = len(hand)
+      for letter in hand.keys():
+          for j in range(hand[letter]):
+            ind = Temp.find(letter)
+            if ind != -1:
+              Temp = Temp[0:ind] + Temp[ind+1:]
+              hand[letter] = hand.get(letter,1)-1
+
+      if Temp == "" and Input in word_list:
+        Cur_Score += get_word_score(Input,n)
+        print("Points Gained: ",get_word_score(Input,n))
+      for letter in hand.keys():
+        cnt += 1
+        for j in range(hand[letter]):
+          cnt -= 1
+      print()
+      display_hand(hand)
+      if cnt ==len(hand.keys()):
+        Input = "!!"
+
+        
+    return Cur_Score 
     # BEGIN PSEUDOCODE <-- Remove this comment when you implement this function
     # Keep track of the total score
     
@@ -262,6 +294,7 @@ def play_hand(hand, word_list):
     # so tell user the total score
 
     # Return the total score as result of function
+
 
 
 
@@ -298,7 +331,7 @@ def substitute_hand(hand, letter):
     """
     
     pass  # TO DO... Remove this line when you implement this function
-       
+      
     
 def play_game(word_list):
     """
@@ -308,7 +341,7 @@ def play_game(word_list):
 
     * Accumulates the score for each hand into a total score for the 
       entire series
- 
+
     * For each hand, before playing, ask the user if they want to substitute
       one letter for another. If the user inputs 'yes', prompt them for their
       desired letter. This can only be done once during the game. Once the
@@ -330,8 +363,45 @@ def play_game(word_list):
 
     word_list: list of lowercase strings
     """
-    
-    print("play_game not implemented.") # TO DO... Remove this line when you implement this function
+    HandNum = int(input(" total number of hands: "))
+    Score = 0
+    Sub=True
+    Replay = True
+    for x in range(HandNum):
+      if(Replay):
+        hand = deal_hand(HAND_SIZE)
+      else:
+        hand = ttt
+      Replay = True
+      display_hand(hand)
+      if Sub:
+        yn = input("do you want to swap a letter in hand Yes/No: ")
+        print()
+      while (yn == "Yes" or yn == "yes" or yn == "y") and Sub:
+        char = input("type a letter that is in your hand: ")
+        print()
+        for letter in hand.keys():
+            ABC = VOWELS + CONSONANTS
+            i = ABC.index(letter)
+            ABC = ABC[0:i] + ABC[i+1:]
+            x = random.choice(ABC)
+            for j in range(hand[letter]):
+              if letter == char:
+                hand[x] = hand.get(x, 0) + 1
+                hand[letter] = hand.get(letter,1)-1
+                Sub = False
+            if not Sub:
+              display_hand(hand)
+              break
+      print()
+      ttt = hand
+      Score += play_hand(hand, word_list)
+      if x < HandNum - 1:
+        yn = input("Do you want to keep playing with this hand Yes/No")
+        if yn == "Yes" or yn == "yes" or yn == "y":
+          Replay = False
+      print()
+    print("Your Score is: ",Score) # TO DO... Remove this line when you implement this function
     
 
 
